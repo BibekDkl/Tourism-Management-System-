@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.nepaltourismmanagement.controllers.TouristDashboardController">
+
+    <top>
+        <VBox style="-fx-background-color: linear-gradient(to right, #2E7D32, #43A047);">
+            <HBox alignment="CENTER_LEFT" spacing="20.0">
+                <padding>
+                    <Insets bottom="10.0" left="20.0" right="20.0" top="10.0" />
+                </padding>
+                <children>
+                    <!-- Left side -->
+                    <VBox spacing="5.0">
+                        <Label text="Welcome to Trip Sewa Nepal!" textFill="WHITE">
+                            <font>
+                                <Font name="System Bold" size="18.0" />
+                            </font>
+                        </Label>
+                        <HBox spacing="5.0">
+                            <children>
+                                <Label text="Current User:" textFill="#e8f5e9" />
+                                <Label fx:id="userLabel" text="Bibek" textFill="WHITE">
+                                    <font>
+                                        <Font name="System Bold" size="14.0" />
+                                    </font>
+                                </Label>
+                                <Label text="(Tourist)" textFill="#e8f5e9" />
+                            </children>
+                        </HBox>
+                    </VBox>
+
+                    <!-- Right side -->
+                    <VBox alignment="CENTER_RIGHT" spacing="5.0">
+                        <children>
+                            <HBox alignment="CENTER_RIGHT" spacing="10.0">
+                                <children>
+                                    <ComboBox fx:id="languageCombo" promptText="Language" style="-fx-background-color: white;" />
+                                    <Button fx:id="refreshButton" onAction="#handleRefresh" style="-fx-background-color: white; -fx-text-fill: #2E7D32;" text="Refresh" />
+                                    <Button fx:id="logoutButton" onAction="#handleLogout" style="-fx-background-color: #E8F5E9; -fx-text-fill: #2E7D32;" text="Logout" />
+                                </children>
+                            </HBox>
+                            <Label fx:id="dateTimeLabel" text="2025-07-12 12:28:40" textFill="WHITE" />
+                        </children>
+                    </VBox>
+                </children>
+            </HBox>
+        </VBox>
+    </top>
+
+    <center>
+        <TabPane tabClosingPolicy="UNAVAILABLE">
+            <tabs>
+                <!-- Book New Trip Tab -->
+                <Tab text="Book New Trip">
+                    <content>
+                        <VBox spacing="15.0" style="-fx-background-color: white;">
+                            <padding>
+                                <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                            </padding>
+                            <children>
+                                <Label text="Available Trips">
+                                    <font>
+                                        <Font name="System Bold" size="16.0" />
+                                    </font>
+                                </Label>
+                                <TableView fx:id="availableTripsTable">
+                                    <columns>
+                                        <TableColumn fx:id="tripNameColumn" prefWidth="200.0" text="Trip Name" />
+                                        <TableColumn fx:id="durationColumn" prefWidth="100.0" text="Duration" />
+                                        <TableColumn fx:id="difficultyColumn" prefWidth="100.0" text="Difficulty" />
+                                        <TableColumn fx:id="priceColumn" prefWidth="100.0" text="Price" />
+                                        <TableColumn fx:id="actionColumn" prefWidth="100.0" text="Action" />
+                                    </columns>
+                                </TableView>
+                            </children>
+                        </VBox>
+                    </content>
+                </Tab>
+
+                <!-- View Your Trips Tab -->
+                <Tab text="View Your Trips">
+                    <content>
+                        <VBox spacing="15.0" style="-fx-background-color: white;">
+                            <padding>
+                                <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                            </padding>
+                            <children>
+                                <Label text="Your Booked Trips">
+                                    <font>
+                                        <Font name="System Bold" size="16.0" />
+                                    </font>
+                                </Label>
+                                <TableView fx:id="bookedTripsTable">
+                                    <columns>
+                                        <TableColumn fx:id="bookedTripNameColumn" prefWidth="200.0" text="Trip Name" />
+                                        <TableColumn fx:id="bookingDateColumn" prefWidth="120.0" text="Date" />
+                                        <TableColumn fx:id="statusColumn" prefWidth="100.0" text="Status" />
+                                        <TableColumn fx:id="bookedPriceColumn" prefWidth="100.0" text="Price" />
+                                    </columns>
+                                </TableView>
+                            </children>
+                        </VBox>
+                    </content>
+                </Tab>
+
+                <!-- Manage Trips Tab -->
+                <Tab text="Manage Trips">
+                    <content>
+                        <VBox spacing="15.0" style="-fx-background-color: white;">
+                            <padding>
+                                <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                            </padding>
+                            <children>
+                                <Label text="Manage Your Trips">
+                                    <font>
+                                        <Font name="System Bold" size="16.0" />
+                                    </font>
+                                </Label>
+                                <TableView fx:id="manageTripsTable">
+                                    <columns>
+                                        <TableColumn fx:id="manageTripNameColumn" prefWidth="200.0" text="Trip Name" />
+                                        <TableColumn fx:id="manageDateColumn" prefWidth="120.0" text="Date" />
+                                        <TableColumn fx:id="manageStatusColumn" prefWidth="100.0" text="Status" />
+                                        <TableColumn fx:id="managePriceColumn" prefWidth="100.0" text="Price" />
+                                    </columns>
+                                </TableView>
+                                <HBox spacing="10.0">
+                                    <children>
+                                        <Button onAction="#handleUpdateBooking" style="-fx-background-color: #2E7D32; -fx-text-fill: white;" text="Update Selected" />
+                                        <Button onAction="#handleCancelBooking" style="-fx-background-color: #c62828; -fx-text-fill: white;" text="Cancel Selected" />
+                                    </children>
+                                </HBox>
+                            </children>
+                        </VBox>
+                    </content>
+                </Tab>
+            </tabs>
+        </TabPane>
+    </center>
+
+    <bottom>
+        <HBox alignment="CENTER" spacing="50.0" style="-fx-padding: 15; -fx-background-color: #E8F5E9;">
+            <children>
+                <VBox>
+                    <children>
+                        <Label style="-fx-font-weight: bold; -fx-text-fill: #2E7D32;" text="Emergency Contacts:" />
+                        <Label style="-fx-text-fill: #666;" text="Police: 100" />
+                        <Label style="-fx-text-fill: #666;" text="Ambulance: 102" />
+                        <Label style="-fx-text-fill: #666;" text="Tourist Police: +977-1-4247041" />
+                    </children>
+                </VBox>
+                <VBox alignment="CENTER">
+                    <children>
+                        <Label style="-fx-text-fill: #666;" text="every moment with adventure, thrill, enjoyment with" />
+                        <Label style="-fx-font-weight: bold; -fx-text-fill: #2E7D32; -fx-font-size: 16;" text="Trip Sewa Nepal" />
+                    </children>
+                </VBox>
+            </children>
+        </HBox>
+    </bottom>
+</BorderPane>

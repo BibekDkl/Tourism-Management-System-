@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Hyperlink?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.nepaltourismmanagement.controllers.GuideDashboardController">
+
+    <top>
+        <VBox style="-fx-background-color: linear-gradient(to right, #2E7D32, #43A047);">
+            <HBox alignment="CENTER_LEFT" spacing="20.0">
+                <padding>
+                    <Insets bottom="10.0" left="20.0" right="20.0" top="10.0" />
+                </padding>
+                <!-- Left Section -->
+                <VBox spacing="5.0">
+                    <Label text="Guide Dashboard - Trip Sewa Nepal!" textFill="WHITE">
+                        <font>
+                            <Font name="System Bold" size="18.0" />
+                        </font>
+                    </Label>
+                    <HBox spacing="5.0">
+                        <Label textFill="#e8f5e9" />
+                        <Label fx:id="userLabel" textFill="WHITE">
+                            <font>
+                                <Font name="System Bold" size="14.0" />
+                            </font>
+                        </Label>
+                        <Label text="(Guide)" textFill="#e8f5e9" />
+                    </HBox>
+                </VBox>
+
+                <Region HBox.hgrow="ALWAYS" />
+
+                <!-- Right Section -->
+                <VBox alignment="CENTER_RIGHT" spacing="5.0">
+                    <HBox alignment="CENTER_RIGHT" spacing="10.0">
+                        <Label fx:id="weatherLabel" textFill="WHITE" />
+                        <Button fx:id="refreshButton" onAction="#handleRefresh" style="-fx-background-color: white; -fx-text-fill: #2E7D32;" text="Refresh" />
+                        <Button fx:id="logoutButton" onAction="#handleLogout" style="-fx-background-color: #E8F5E9; -fx-text-fill: #2E7D32;" text="Logout" />
+                    </HBox>
+                    <Label fx:id="dateTimeLabel" text="2025-07-12 13:06:02" textFill="WHITE" />
+                </VBox>
+            </HBox>
+        </VBox>
+    </top>
+
+    <center>
+        <TabPane tabClosingPolicy="UNAVAILABLE">
+            <Tab text="Upcoming Trips">
+                <VBox spacing="15.0" style="-fx-background-color: white;">
+                    <padding>
+                        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                    </padding>
+                    <Label text="Your Upcoming Trips">
+                        <font>
+                            <Font name="System Bold" size="16.0" />
+                        </font>
+                    </Label>
+                    <TableView fx:id="upcomingTripsTable">
+                        <columns>
+                            <TableColumn fx:id="tripNameColumn" prefWidth="200.0" text="Trip Name" />
+                            <TableColumn fx:id="startDateColumn" prefWidth="120.0" text="Start Date" />
+                            <TableColumn fx:id="durationColumn" prefWidth="100.0" text="Duration" />
+                            <TableColumn fx:id="touristsColumn" prefWidth="100.0" text="Tourists" />
+                            <TableColumn fx:id="statusColumn" prefWidth="100.0" text="Status" />
+                        </columns>
+                    </TableView>
+                </VBox>
+            </Tab>
+
+            <Tab text="Profile">
+                <ScrollPane fitToWidth="true">
+                    <VBox spacing="20.0" style="-fx-background-color: white;">
+                        <padding>
+                            <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                        </padding>
+                        <!-- Profile Information -->
+                        <VBox spacing="10.0">
+                            <Label style="-fx-font-size: 16; -fx-font-weight: bold;" text="Personal Information" />
+                            <GridPane hgap="10" vgap="10">
+                                <columnConstraints>
+                                    <ColumnConstraints minWidth="100" prefWidth="150" />
+                                    <ColumnConstraints minWidth="200" prefWidth="300" />
+                                </columnConstraints>
+                                <Label text="Full Name:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+                                <Label fx:id="fullNameLabel" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+
+                                <Label text="Email:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+                                <Label fx:id="emailLabel" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+
+                                <Label text="Phone:" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+                                <Label fx:id="phoneLabel" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+
+                                <Label text="Experience:" GridPane.columnIndex="0" GridPane.rowIndex="3" />
+                                <Label fx:id="experienceLabel" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                        <rowConstraints>
+                           <RowConstraints />
+                           <RowConstraints />
+                           <RowConstraints />
+                           <RowConstraints />
+                        </rowConstraints>
+                            </GridPane>
+                        </VBox>
+
+                        <!-- Earnings Section -->
+                        <VBox spacing="10.0">
+                            <Label style="-fx-font-size: 16; -fx-font-weight: bold;" text="Earnings Overview" />
+                            <HBox spacing="20.0">
+                                <VBox style="-fx-background-color: #E8F5E9; -fx-padding: 15; -fx-background-radius: 5;">
+                                    <Label style="-fx-font-weight: bold;" text="Total Earnings" />
+                                    <Label fx:id="totalEarningsLabel" style="-fx-font-size: 24;" />
+                                </VBox>
+                                <VBox style="-fx-background-color: #E8F5E9; -fx-padding: 15; -fx-background-radius: 5;">
+                                    <Label style="-fx-font-weight: bold;" text="This Month" />
+                                    <Label fx:id="monthlyEarningsLabel" style="-fx-font-size: 24;" />
+                                </VBox>
+                            </HBox>
+                        </VBox>
+                    </VBox>
+                </ScrollPane>
+            </Tab>
+
+            <Tab text="Weather">
+                <VBox spacing="15.0" style="-fx-background-color: white;">
+                    <padding>
+                        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                    </padding>
+                    <HBox spacing="20.0">
+                        <VBox style="-fx-background-color: #E8F5E9; -fx-padding: 15; -fx-background-radius: 5;">
+                            <Label style="-fx-font-weight: bold;" text="Current Weather" />
+                            <Label fx:id="currentWeatherLabel" />
+                            <Label fx:id="humidityLabel" />
+                            <Label fx:id="windSpeedLabel" />
+                        </VBox>
+                    </HBox>
+                </VBox>
+            </Tab>
+        </TabPane>
+    </center>
+
+    <bottom>
+        <HBox alignment="CENTER" spacing="50.0" style="-fx-padding: 15; -fx-background-color: #E8F5E9;">
+            <children>
+                <VBox>
+                    <children>
+                        <Label style="-fx-font-weight: bold; -fx-text-fill: #2E7D32;" text="Important Contacts:" />
+                        <Label style="-fx-text-fill: #666;" text="Emergency: 112" />
+                        <Label style="-fx-text-fill: #666;" text="Guide Association: +977-1-4440920" />
+                        <Label style="-fx-text-fill: #666;" text="Trip Sewa Support: +977-1-4444444" />
+                    </children>
+                </VBox>
+                <VBox alignment="CENTER">
+                    <children>
+                        <Label style="-fx-text-fill: #666;" text="Guiding adventures, creating memories with" />
+                        <Label style="-fx-font-weight: bold; -fx-text-fill: #2E7D32; -fx-font-size: 16;" text="Trip Sewa Nepal" />
+                        <Label fx:id="footerDateTimeLabel" style="-fx-text-fill: #666;" text="2025-07-12 13:06:02" />
+                    </children>
+                </VBox>
+                <VBox>
+                    <children>
+                        <Label style="-fx-font-weight: bold; -fx-text-fill: #2E7D32;" text="Quick Links:" />
+                        <Hyperlink style="-fx-text-fill: #2E7D32;" text="Guide Resources" />
+                        <Hyperlink style="-fx-text-fill: #2E7D32;" text="Weather Updates" />
+                        <Hyperlink style="-fx-text-fill: #2E7D32;" text="Safety Guidelines" />
+                    </children>
+                </VBox>
+            </children>
+        </HBox>
+    </bottom>
+</BorderPane>

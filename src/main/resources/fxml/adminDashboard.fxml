@@ -1,0 +1,271 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.String?>
+<?import javafx.collections.FXCollections?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.chart.BarChart?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.chart.PieChart?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Hyperlink?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.nepaltourismmanagement.controllers.AdminDashboardController">
+
+    <top>
+        <VBox style="-fx-background-color: linear-gradient(to right, #2E7D32, #43A047);">
+            <HBox alignment="CENTER_LEFT" spacing="20.0">
+                <padding>
+                    <Insets bottom="10.0" left="20.0" right="20.0" top="10.0" />
+                </padding>
+                <VBox spacing="5.0">
+                    <Label text="Welcome to Trip Sewa Nepal!" textFill="WHITE">
+                        <font>
+                            <Font name="System Bold" size="18.0" />
+                        </font>
+                    </Label>
+                    <HBox spacing="5.0">
+                        <Label text="Current user: " textFill="#e8f5e9" />
+                        <Label fx:id="userLabel" text="Bibek" textFill="WHITE">
+                            <font>
+                                <Font name="System Bold" size="14.0" />
+                            </font>
+                        </Label>
+                    </HBox>
+                </VBox>
+
+                <Region HBox.hgrow="ALWAYS" />
+
+                <VBox alignment="CENTER_RIGHT" spacing="5.0">
+                    <Label fx:id="dateTimeLabel" text="2025-07-12 14:16:49" textFill="WHITE" />
+                    <HBox spacing="10.0">
+                        <ComboBox fx:id="languageCombo" promptText="Select Language" />
+                        <Button fx:id="refreshButton" onAction="#handleRefresh" style="-fx-background-color: white; -fx-text-fill: #2E7D32;" text="Refresh" />
+                        <Button fx:id="logoutButton" onAction="#handleLogout" style="-fx-background-color: #E8F5E9; -fx-text-fill: #2E7D32;" text="Logout" />
+                    </HBox>
+                </VBox>
+            </HBox>
+        </VBox>
+    </top>
+
+    <center>
+        <TabPane tabClosingPolicy="UNAVAILABLE">
+            <!-- Booking Management Tab -->
+            <Tab text="Booking Management">
+                <VBox spacing="15.0" style="-fx-background-color: white;">
+                    <padding>
+                        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                    </padding>
+
+                    <TableView fx:id="bookingsTable" VBox.vgrow="ALWAYS">
+                        <columns>
+                            <TableColumn fx:id="bookingIdColumn" prefWidth="100" text="Booking ID" />
+                            <TableColumn fx:id="touristNameColumn" prefWidth="120" text="Tourist" />
+<!--                            <TableColumn fx:id="guideNameColumn" prefWidth="120" text="Guide" />-->
+<!--                            <TableColumn fx:id="trekNameColumn" prefWidth="150" text="Trek" />-->
+                            <TableColumn fx:id="bookingDateColumn" prefWidth="120" text="Date" />
+                            <TableColumn fx:id="statusColumn" prefWidth="100" text="Status" />
+                            <TableColumn fx:id="priceColumn" prefWidth="100" text="Price" />
+                        </columns>
+                    </TableView>
+
+                    <HBox spacing="10">
+                        <ComboBox fx:id="bookingStatusFilter" promptText="Filter by Status">
+                            <items>
+                                <FXCollections fx:factory="observableArrayList">
+                                    <String fx:value="All" />
+                                    <String fx:value="Pending" />
+                                    <String fx:value="Confirmed" />
+                                    <String fx:value="Completed" />
+                                    <String fx:value="Cancelled" />
+                                </FXCollections>
+                            </items>
+                        </ComboBox>
+                        <Button onAction="#handleUpdateStatus" style="-fx-background-color: #2E7D32; -fx-text-fill: white;" text="Update Status" />
+                        <Button onAction="#handleAssignGuide" style="-fx-background-color: #2E7D32; -fx-text-fill: white;" text="Assign Guide" />
+                        <Button onAction="#handleCancelBooking" style="-fx-background-color: #c62828; -fx-text-fill: white;" text="Cancel Booking" />
+                    </HBox>
+                </VBox>
+            </Tab>
+
+            <!-- Trek Guide Management Tab -->
+            <Tab text="Trek Guide Management">
+                <VBox spacing="15.0" style="-fx-background-color: white;">
+                    <padding>
+                        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                    </padding>
+
+                    <TableView fx:id="guidesTable" VBox.vgrow="ALWAYS">
+                        <columns>
+                            <TableColumn fx:id="guideIdColumn" text="Guide ID" />
+                            <TableColumn fx:id="guideNameColumn" text="Guide Name" />
+                            <TableColumn fx:id="languagesColumn" text="Languages" />
+                            <TableColumn fx:id="experienceColumn" text="Experience (Years)" />
+                            <TableColumn fx:id="certificationsColumn" text="Certifications" />
+                        </columns>
+                    </TableView>
+
+                    <GridPane hgap="10" vgap="10">
+                        <TextField fx:id="guideNameField" promptText="Guide Name" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+                        <TextField fx:id="emailField" promptText="Email" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+                        <TextField fx:id="phoneField" promptText="Phone" GridPane.columnIndex="2" GridPane.rowIndex="0" />
+                        <TextField fx:id="languagesField" promptText="Languages" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+                        <TextField fx:id="experienceField" promptText="Experience (Years)" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                        <TextField fx:id="certificationsField" promptText="Certifications" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+                  <columnConstraints>
+                     <ColumnConstraints />
+                     <ColumnConstraints />
+                     <ColumnConstraints />
+                  </columnConstraints>
+                  <rowConstraints>
+                     <RowConstraints />
+                     <RowConstraints />
+                  </rowConstraints>
+                    </GridPane>
+
+                    <HBox spacing="10">
+                        <Button onAction="#handleAddGuide" style="-fx-background-color: #4CAF50; -fx-text-fill: white;" text="Add Guide" />
+                        <Button onAction="#handleUpdateGuide" style="-fx-background-color: #2196F3; -fx-text-fill: white;" text="Update Guide" />
+                        <Button onAction="#handleDeleteGuide" style="-fx-background-color: #F44336; -fx-text-fill: white;" text="Delete Guide" />
+                    </HBox>
+                </VBox>
+            </Tab>
+
+            <!-- Trek Locations Tab -->
+            <Tab text="Trek Locations">
+                <VBox spacing="15.0" style="-fx-background-color: white;">
+                    <padding>
+                        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                    </padding>
+
+                    <TableView fx:id="treksTable" VBox.vgrow="ALWAYS">
+                        <columns>
+                            <TableColumn fx:id="trekNameColumn" text="Trek Name" />
+                            <TableColumn fx:id="regionColumn" text="Region" />
+                            <TableColumn fx:id="maxAltitudeColumn" text="Max Altitude" />
+                            <TableColumn fx:id="durationColumn" text="Duration (Days)" />
+                            <TableColumn fx:id="difficultyColumn" text="Difficulty" />
+                            <TableColumn fx:id="basePriceColumn" text="Base Price" />
+                        </columns>
+                    </TableView>
+
+                    <GridPane hgap="10" vgap="10">
+                        <TextField fx:id="trekNameField" promptText="Trek Name" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+                        <TextField fx:id="regionField" promptText="Region" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+                        <TextField fx:id="maxAltitudeField" promptText="Max Altitude" GridPane.columnIndex="2" GridPane.rowIndex="0" />
+                        <TextField fx:id="durationField" promptText="Duration (Days)" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+                        <ComboBox fx:id="difficultyCombo" promptText="Difficulty Level" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                            <items>
+                                <FXCollections fx:factory="observableArrayList">
+                                    <String fx:value="Easy" />
+                                    <String fx:value="Moderate" />
+                                    <String fx:value="Difficult" />
+                                    <String fx:value="Very Difficult" />
+                                    <String fx:value="Extreme" />
+                                </FXCollections>
+                            </items>
+                        </ComboBox>
+                        <TextField fx:id="basePriceField" promptText="Base Price" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+                  <columnConstraints>
+                     <ColumnConstraints />
+                     <ColumnConstraints />
+                     <ColumnConstraints />
+                  </columnConstraints>
+                  <rowConstraints>
+                     <RowConstraints />
+                     <RowConstraints />
+                  </rowConstraints>
+                    </GridPane>
+
+                    <HBox spacing="10">
+                        <Button onAction="#handleAddTrek" style="-fx-background-color: #4CAF50; -fx-text-fill: white;" text="Add Trek" />
+                        <Button onAction="#handleUpdateTrek" style="-fx-background-color: #2196F3; -fx-text-fill: white;" text="Update Trek" />
+                        <Button onAction="#handleDeleteTrek" style="-fx-background-color: #F44336; -fx-text-fill: white;" text="Delete Trek" />
+                    </HBox>
+
+                    <TitledPane expanded="false" text="Trek Statistics">
+                        <VBox spacing="10">
+                            <!-- Statistics content -->
+                        </VBox>
+                    </TitledPane>
+                </VBox>
+            </Tab>
+
+            <!-- Analytics Dashboard Tab -->
+            <Tab text="Analytics Dashboard">
+                <ScrollPane fitToWidth="true">
+                    <VBox spacing="20.0" style="-fx-background-color: white;">
+                        <padding>
+                            <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                        </padding>
+
+                        <HBox spacing="20.0">
+                            <VBox style="-fx-background-color: #E8F5E9; -fx-padding: 15; -fx-background-radius: 5;" styleClass="summary-card">
+                                <Label style="-fx-font-weight: bold;" text="Total Bookings" />
+                                <Label fx:id="totalBookingsLabel" style="-fx-font-size: 24;" />
+                            </VBox>
+                            <VBox style="-fx-background-color: #E8F5E9; -fx-padding: 15; -fx-background-radius: 5;" styleClass="summary-card">
+                                <Label style="-fx-font-weight: bold;" text="Total Revenue" />
+                                <Label fx:id="totalRevenueLabel" style="-fx-font-size: 24;" />
+                            </VBox>
+                            <VBox style="-fx-background-color: #E8F5E9; -fx-padding: 15; -fx-background-radius: 5;" styleClass="summary-card">
+                                <Label style="-fx-font-weight: bold;" text="Active Guides" />
+                                <Label fx:id="activeGuidesLabel" style="-fx-font-size: 24;" />
+                            </VBox>
+                        </HBox>
+
+                        <HBox spacing="20.0">
+                            <BarChart fx:id="bookingsChart" title="Monthly Bookings">
+                                <xAxis>
+                                    <CategoryAxis label="Month" />
+                                </xAxis>
+                                <yAxis>
+                                    <NumberAxis label="Number of Bookings" />
+                                </yAxis>
+                            </BarChart>
+                            <PieChart fx:id="revenueChart" title="Revenue by Trek Type" />
+                        </HBox>
+                    </VBox>
+                </ScrollPane>
+            </Tab>
+        </TabPane>
+    </center>
+
+    <bottom>
+        <HBox alignment="CENTER" spacing="50.0" style="-fx-padding: 15; -fx-background-color: #E8F5E9;">
+            <VBox>
+                <Label style="-fx-font-weight: bold; -fx-text-fill: #2E7D32;" text="System Stats:" />
+                <Label fx:id="activeUsersLabel" style="-fx-text-fill: #666;" text="Active Users: 0" />
+                <Label fx:id="pendingBookingsLabel" style="-fx-text-fill: #666;" text="Pending Bookings: 0" />
+                <Label fx:id="systemStatusLabel" style="-fx-text-fill: #666;" text="System Status: Online" />
+            </VBox>
+            <VBox alignment="CENTER">
+                <Label style="-fx-text-fill: #666;" text="Managing adventures and experiences with" />
+                <Label style="-fx-font-weight: bold; -fx-text-fill: #2E7D32; -fx-font-size: 16;" text="trip sewa Nepal" />
+            </VBox>
+            <VBox>
+                <Label style="-fx-font-weight: bold; -fx-text-fill: #2E7D32;" text="Quick Actions:" />
+                <Hyperlink style="-fx-text-fill: #2E7D32;" text="System Settings" />
+                <Hyperlink style="-fx-text-fill: #2E7D32;" text="Generate Reports" />
+                <Hyperlink style="-fx-text-fill: #2E7D32;" text="Backup Data" />
+            </VBox>
+        </HBox>
+    </bottom>
+</BorderPane>

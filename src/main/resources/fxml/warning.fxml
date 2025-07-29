@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.DialogPane?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<DialogPane prefWidth="450.0" style="-fx-background-color: #FFE4E4; -fx-border-color: #DC143C; -fx-border-width: 2; -fx-border-radius: 10; -fx-background-radius: 10;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.nepaltourismmanagement.controllers.WarningController">
+
+    <content>
+        <VBox alignment="CENTER" spacing="20">
+            <padding>
+                <Insets bottom="20" left="20" right="20" top="20" />
+            </padding>
+
+            <!-- Header -->
+            <Label text="⚠ Danger Warning!" textFill="#DC143C">
+                <font>
+                    <Font name="System Bold" size="24.0" />
+                </font>
+            </Label>
+
+            <!-- Warning Message -->
+            <VBox alignment="CENTER" spacing="10">
+                <Label text="This Trek has a height restriction and the weather" textFill="#660000" wrapText="true">
+                    <font>
+                        <Font size="14.0" />
+                    </font>
+                </Label>
+                <Label text="conditions are currently unsafe." textFill="#660000" wrapText="true">
+                    <font>
+                        <Font size="14.0" />
+                    </font>
+                </Label>
+            </VBox>
+
+            <!-- Buttons -->
+            <HBox alignment="CENTER" spacing="20">
+                <Button fx:id="chooseAnotherButton" onAction="#handleChooseAnother" style="-fx-background-color: #FF4444; -fx-text-fill: white; -fx-font-weight: bold; -fx-min-width: 130;" text="Choose Another Trip">
+                    <padding>
+                        <Insets bottom="10" left="20" right="20" top="10" />
+                    </padding>
+                </Button>
+            </HBox>
+
+            <Button fx:id="proceedButton" onAction="#handleProceed" style="-fx-background-color: #B22222; -fx-text-fill: white; -fx-font-weight: bold; -fx-min-width: 130;" text="Proceed At Own Risk">
+                <padding>
+                    <Insets bottom="10" left="20" right="20" top="10" />
+                </padding>
+            </Button>
+
+            <!-- Timestamp and User Info (Hidden) -->
+            <Label fx:id="timestampLabel" text="2025-07-29 18:23:26" visible="false" />
+            <Label fx:id="userLabel" text="BibekDkl" visible="false" />
+        </VBox>
+    </content>
+</DialogPane>

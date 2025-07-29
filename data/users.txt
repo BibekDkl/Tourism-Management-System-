@@ -1,0 +1,6 @@
+4dbcd44e-ff03-4599-ac64-631fec138b97|bibek|B!bekdkl123|Bibek Dhakal|bibek@gmail.com|9840394523|nepali|1234567|1234567890|TOURIST|2025-07-29 23:25:09
+1833a178-7adc-4b0a-92f1-8bb57e4486ea|bibek|B!bekdkl123|Bibek Dhakal|bibek@gmail.com|9840394523|nepali|1234567|1234567890|TOURIST|2025-07-29 23:26:19
+b300d029-20e5-4e4e-b9b5-1cf5e4c767bb|bibek|B!bekdkl123|Bibek Dhakal|bibek@gmail.com|1234567890|nepali|12345|0987654321|TOURIST|2025-07-29 23:29:04
+6698ecec-4f6f-41e9-9144-442ad3c50aa9|samyog123|S@myog123|Samyog|samyog123@gmail.com|9840503945|nepali|12346|1234567890|GUIDE|2025-07-29 23:33:57
+4e079a71-bb99-4531-bf0d-becb98a5727b|admin|admin123|System Administrator|admin@tripsewa.com|9800000000|Nepal|||ADMIN|2025-07-29 18:05:34
+4639e66f-9a31-4541-aa82-ebabf06ef205|tourist|tourist123|BibekDkl|tourist@example.com|9800000001|Nepal|||TOURIST|2025-07-29 18:44:06
