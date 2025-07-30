@@ -4,17 +4,19 @@ public class Booking {
     private String id;
     private String trekId;
     private String touristId;
-    private String trekName;
-    private String touristName;
-    private String bookingDate;
-    private int duration;
-    private double price;
-    private String status;
     private String guideId;
+    private String bookingDate;
+    private String status;
+    private double price;
+    private int duration;
     private boolean highRiskAcknowledged;
 
-    public Booking() {
-    }
+    // Additional fields to cache related entity names
+    private String trekName;
+    private String touristName;
+    private String guideName;
+
+    // Getters and setters
 
     public String getId() {
         return id;
@@ -40,6 +42,54 @@ public class Booking {
         this.touristId = touristId;
     }
 
+    public String getGuideId() {
+        return guideId;
+    }
+
+    public void setGuideId(String guideId) {
+        this.guideId = guideId;
+    }
+
+    public String getBookingDate() {
+        return bookingDate;
+    }
+
+    public void setBookingDate(String bookingDate) {
+        this.bookingDate = bookingDate;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public double getPrice() {
+        return price;
+    }
+
+    public void setPrice(double price) {
+        this.price = price;
+    }
+
+    public int getDuration() {
+        return duration;
+    }
+
+    public void setDuration(int duration) {
+        this.duration = duration;
+    }
+
+    public boolean isHighRiskAcknowledged() {
+        return highRiskAcknowledged;
+    }
+
+    public void setHighRiskAcknowledged(boolean highRiskAcknowledged) {
+        this.highRiskAcknowledged = highRiskAcknowledged;
+    }
+
     public String getTrekName() {
         return trekName;
     }
@@ -56,65 +106,11 @@ public class Booking {
         this.touristName = touristName;
     }
 
-    public String getBookingDate() {
-        return bookingDate;
+    public String getGuideName() {
+        return guideName;
     }
 
-    public void setBookingDate(String bookingDate) {
-        this.bookingDate = bookingDate;
-    }
-
-    public int getDuration() {
-        return duration;
-    }
-
-    public void setDuration(int duration) {
-        this.duration = duration;
-    }
-
-    public double getPrice() {
-        return price;
-    }
-
-    public void setPrice(double price) {
-        this.price = price;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public String getGuideId() {
-        return guideId;
-    }
-
-    public void setGuideId(String guideId) {
-        this.guideId = guideId;
-    }
-
-    public boolean isHighRiskAcknowledged() {
-        return highRiskAcknowledged;
-    }
-
-    public void setHighRiskAcknowledged(boolean highRiskAcknowledged) {
-        this.highRiskAcknowledged = highRiskAcknowledged;
-    }
-
-    @Override
-    public String toString() {
-        return "Booking{" +
-                "id='" + id + '\'' +
-                ", trekName='" + trekName + '\'' +
-                ", touristName='" + touristName + '\'' +
-                ", bookingDate='" + bookingDate + '\'' +
-                ", status='" + status + '\'' +
-                '}';
-    }
-
-    public void setGuideName(String name) {
+    public void setGuideName(String guideName) {
+        this.guideName = guideName;
     }
 }
