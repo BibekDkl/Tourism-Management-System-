@@ -8,14 +8,15 @@ public class Guide {
     private String phoneNumber;
     private String languages;
     private int yearsOfExperience;
-    private String certifications;
-    private String specializations;
-    private boolean available;
+    private String certifications;  // Add this field
+    private String specializations;  // Add this field
+    private boolean available;  // Add this field
 
+    // Constructor
     public Guide() {
     }
 
-    // Getters and Setters
+    // Getters and setters
     public String getId() {
         return id;
     }

@@ -13,42 +13,60 @@ import javafx.scene.control.*;
 
 import java.io.IOException;
 import java.net.URL;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ResourceBundle;
 
 public class RegisterController implements Initializable {
 
-    @FXML private TextField fullnameField;
-    @FXML private TextField nationalityField;
-    @FXML private TextField contactField;
+    // Constants for current date and user
+    private static final String CURRENT_DATE = "2025-07-30 06:58:45";
+    private static final String CURRENT_USER = "BibekDkl";
+
+    // FXML field references - renamed to match your FXML
+    @FXML private TextField fullNameField;  // Changed from fullnameField
     @FXML private TextField emailField;
-    @FXML private TextField passportField;
+    @FXML private TextField phoneField;     // Changed from contactField
+    @FXML private TextField usernameField;  // Added as it's in your FXML
     @FXML private PasswordField passwordField;
     @FXML private PasswordField confirmPasswordField;
-    @FXML private TextField contactField1; // Emergency contact
-    @FXML private ComboBox<String> roleComboBox;
+    @FXML private ComboBox<String> userRoleCombo; // Changed from roleComboBox
     @FXML private Button registerButton;
     @FXML private Hyperlink loginLink;
+    @FXML private Label currentTimeLabel;   // Added
+    @FXML private Label currentUserLabel;   // Added
 
     private DatabaseUtil databaseUtil;
     private ValidationUtil validationUtil;
     private SceneManager sceneManager;
-    private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        System.out.println("RegisterController initializing");
         databaseUtil = new DatabaseUtil();
         validationUtil = new ValidationUtil();
         sceneManager = new SceneManager();
 
+        // Set current date and user labels
+        if (currentTimeLabel != null) {
+            currentTimeLabel.setText("Current Date and Time (UTC - YYYY-MM-DD HH:MM:SS formatted): " + CURRENT_DATE);
+        }
+
+        if (currentUserLabel != null) {
+            currentUserLabel.setText("Current User's Login: " + CURRENT_USER);
+        }
+
         // Populate role dropdown
-        roleComboBox.setItems(FXCollections.observableArrayList("Tourist", "Guide"));
-        roleComboBox.getSelectionModel().selectFirst();
+        if (userRoleCombo != null) {
+            userRoleCombo.setItems(FXCollections.observableArrayList("Tourist", "Guide"));
+            userRoleCombo.getSelectionModel().selectFirst();
+        } else {
+            System.err.println("WARNING: userRoleCombo is null!");
+        }
     }
 
     @FXML
     private void handleRegister(ActionEvent event) {
+        System.out.println("Register button clicked");
+
         // Validate fields
         if (!validateFields()) {
             return;
@@ -77,25 +95,27 @@ public class RegisterController implements Initializable {
     }
 
     @FXML
-    private void handleLoginLink() {
+    private void handleLoginLink(ActionEvent event) {
         try {
-            sceneManager.switchToLoginPage(loginLink);
+            System.out.println("Login link clicked");
+            sceneManager.switchToLoginPage(event);
         } catch (IOException e) {
+            e.printStackTrace();
             showAlert(Alert.AlertType.ERROR, "Navigation Error",
                     "Could not navigate to login page: " + e.getMessage());
-            e.printStackTrace();
         }
     }
 
     private boolean validateFields() {
+        System.out.println("Validating fields");
+
         // Check required fields
-        if (fullnameField.getText().trim().isEmpty() ||
-                nationalityField.getText().trim().isEmpty() ||
-                contactField.getText().trim().isEmpty() ||
+        if (fullNameField.getText().trim().isEmpty() ||
                 emailField.getText().trim().isEmpty() ||
+                phoneField.getText().trim().isEmpty() ||
+                usernameField.getText().trim().isEmpty() ||
                 passwordField.getText().trim().isEmpty() ||
-                confirmPasswordField.getText().trim().isEmpty() ||
-                contactField1.getText().trim().isEmpty()) {
+                confirmPasswordField.getText().trim().isEmpty()) {
 
             showAlert(Alert.AlertType.ERROR, "Validation Error", "All required fields must be filled.");
             return false;
@@ -108,7 +128,7 @@ public class RegisterController implements Initializable {
         }
 
         // Validate phone number
-        if (!validationUtil.isValidPhoneNumber(contactField.getText().trim())) {
+        if (!validationUtil.isValidPhoneNumber(phoneField.getText().trim())) {
             showAlert(Alert.AlertType.ERROR, "Validation Error", "Invalid phone number format.");
             return false;
         }
@@ -132,21 +152,14 @@ public class RegisterController implements Initializable {
     private User createUserFromForm() {
         User user = new User();
 
-        // Generate a username from email (first part before @)
-        String email = emailField.getText().trim();
-        String username = email.split("@")[0];
-
-        user.setUsername(username);
-        user.setFullName(fullnameField.getText().trim());
-        user.setNationality(nationalityField.getText().trim());
-        user.setContactNumber(contactField.getText().trim());
-        user.setEmail(email);
-        user.setPassportNumber(passportField.getText().trim());
+        user.setUsername(usernameField.getText().trim());
+        user.setFullName(fullNameField.getText().trim());
+        user.setEmail(emailField.getText().trim());
+        user.setContactNumber(phoneField.getText().trim());
         user.setPassword(passwordField.getText()); // In real app, hash this before storing
-        user.setEmergencyContact(contactField1.getText().trim());
 
         // Set role based on selection
-        String roleSelection = roleComboBox.getValue();
+        String roleSelection = userRoleCombo.getValue();
         if ("Guide".equals(roleSelection)) {
             user.setRole(UserRole.GUIDE);
         } else {

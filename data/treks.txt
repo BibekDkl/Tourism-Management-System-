@@ -1,2 +1,5 @@
-dee0fd01-6936-403d-85a7-2d8ab956f241|qweq|wqee|123123|123|Moderate|1.23123131E8|null|false|
-23cd8fb6-1fa2-44c5-af46-56678bf9a75e|eawda|awdawd|1231321|1231|Extreme|1.23141324E8|null|false|
+8fe8afb7-63bf-482a-b274-804d7c313a38|Everest Base Camp Trek|Khumbu|5364|14|Difficult|1500|Experience the world's highest peak up close|true|Spring,Autumn
+d92e7bf9-9103-4fc7-9766-e300e23d5fac|Annapurna Circuit|Annapurna|5416|18|Difficult|1800|Complete circuit around the Annapurna massif|true|Spring,Autumn
+166a8f8e-0437-45f6-9bcd-b9825caa34a2|Langtang Valley|Langtang|4600|7|Moderate|900|Beautiful valley trek with rich culture|true|Spring,Autumn,Winter
+6fe5c533-b2ab-4b67-b825-bb83b5481618|Poon Hill Trek|Annapurna|3210|5|Easy|700|Short trek with amazing mountain views|true|All Year
+585f02d5-6d4d-4617-8ef6-e9e4219d05b6|Manaslu Circuit|Manaslu|5115|16|Very Difficult|1600|Remote and challenging trek around Manaslu|true|Spring,Autumn

@@ -1,118 +1,75 @@
 package com.example.nepaltourismmanagement.utils;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
-
 public class WeatherUtil {
 
-    // In a real application, you would use an actual weather API
-    // For this example, we'll simulate weather data
-    private final Map<String, String> weatherConditions;
-    private final Random random;
+    // Constants
+    private static final String CURRENT_DATE = "2025-07-30 06:26:05";
 
-    public WeatherUtil() {
-        weatherConditions = new HashMap<>();
-        random = new Random();
-
-        // Initialize some sample weather conditions for popular trekking areas
-        weatherConditions.put("Kathmandu", "Partly Cloudy, 25°C");
-        weatherConditions.put("Pokhara", "Sunny, 28°C");
-        weatherConditions.put("Everest Base Camp", "Cold, -5°C");
-        weatherConditions.put("Annapurna", "Cloudy, 15°C");
-        weatherConditions.put("Langtang", "Light Rain, 18°C");
-    }
-
-    /**
-     * Get current weather for a location
-     * @param location The name of the location
-     * @return A string representing the weather condition
-     */
     public String getCurrentWeather(String location) {
-        if (weatherConditions.containsKey(location)) {
-            return weatherConditions.get(location);
+        // In a real app, this would call a weather API
+        // For demonstration, we'll return a static value
+        if ("Kathmandu".equalsIgnoreCase(location)) {
+            return "Partly Cloudy";
+        } else if ("Pokhara".equalsIgnoreCase(location)) {
+            return "Sunny";
+        } else if ("Everest".equalsIgnoreCase(location)) {
+            return "Snowy";
         } else {
-            // Generate random weather for unknown locations
-            String[] conditions = {"Sunny", "Cloudy", "Rainy", "Partly Cloudy", "Foggy"};
-            int temperature = random.nextInt(35) - 5; // Temperature between -5 and 30
-            return conditions[random.nextInt(conditions.length)] + ", " + temperature + "°C";
+            return "Clear";
         }
     }
 
-    /**
-     * Check if weather is safe for trekking in a high altitude location
-     * @param location The name of the location
-     * @return True if weather is safe for trekking, false otherwise
-     */
-    public boolean isSafeTrekkingWeather(String location) {
-        // In a real app, this would check actual weather conditions
-        // For this example, we'll simulate a safety check
-        if (location.toLowerCase().contains("everest")) {
-            // 70% chance that Everest weather is unsafe
-            return random.nextDouble() > 0.7;
-        } else if (location.toLowerCase().contains("annapurna")) {
-            // 50% chance that Annapurna weather is unsafe
-            return random.nextDouble() > 0.5;
+    public double getTemperature(String location) {
+        // In a real app, this would call a weather API
+        if ("Kathmandu".equalsIgnoreCase(location)) {
+            return 25.0;
+        } else if ("Pokhara".equalsIgnoreCase(location)) {
+            return 28.0;
+        } else if ("Everest".equalsIgnoreCase(location)) {
+            return -5.0;
         } else {
-            // Most other locations are generally safe
-            return random.nextDouble() > 0.2;
+            return 22.0;
         }
     }
 
-    /**
-     * Get a weather forecast for the next few days
-     * @param location The name of the location
-     * @param days Number of days to forecast
-     * @return A string array with forecasts for each day
-     */
-    public String[] getWeatherForecast(String location, int days) {
-        String[] forecast = new String[days];
-        String[] conditions = {"Sunny", "Cloudy", "Rainy", "Partly Cloudy", "Foggy", "Windy", "Stormy"};
-
-        for (int i = 0; i < days; i++) {
-            int temperature = random.nextInt(35) - 5; // Temperature between -5 and 30
-            forecast[i] = "Day " + (i + 1) + ": " + conditions[random.nextInt(conditions.length)] +
-                    ", " + temperature + "°C";
+    public int getHumidity(String location) {
+        // In a real app, this would call a weather API
+        if ("Kathmandu".equalsIgnoreCase(location)) {
+            return 60;
+        } else if ("Pokhara".equalsIgnoreCase(location)) {
+            return 65;
+        } else if ("Everest".equalsIgnoreCase(location)) {
+            return 30;
+        } else {
+            return 50;
         }
-
-        return forecast;
     }
 
-    /**
-     * In a real application, this method would call an external weather API
-     * For now, it's a placeholder for future implementation
-     */
-    private String fetchWeatherFromAPI(String location) {
-        try {
-            // This is just a placeholder for what would be a real API call
-            String apiKey = "your_api_key_here";
-            String urlString = "https://api.weatherapi.com/v1/current.json?key=" + apiKey + "&q=" + location;
-
-            URL url = new URL(urlString);
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod("GET");
-
-            BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-            String inputLine;
-            StringBuilder content = new StringBuilder();
-
-            while ((inputLine = in.readLine()) != null) {
-                content.append(inputLine);
-            }
-
-            in.close();
-            conn.disconnect();
-
-            // In a real app, you would parse this JSON response and extract weather data
-            return content.toString();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return "Weather data unavailable";
+    public double getWindSpeed(String location) {
+        // In a real app, this would call a weather API
+        if ("Kathmandu".equalsIgnoreCase(location)) {
+            return 10.0;
+        } else if ("Pokhara".equalsIgnoreCase(location)) {
+            return 8.0;
+        } else if ("Everest".equalsIgnoreCase(location)) {
+            return 40.0;
+        } else {
+            return 12.0;
         }
+    }
+
+    public String getForecast(String location, int days) {
+        // In a real app, this would call a weather API
+        return "Mostly " + getCurrentWeather(location) + " for the next " + days + " days";
+    }
+
+    public boolean isHikingRecommended(String location) {
+        // Basic logic for hiking recommendation
+        String weather = getCurrentWeather(location);
+        double temperature = getTemperature(location);
+        double windSpeed = getWindSpeed(location);
+
+        return !weather.contains("Rain") && !weather.contains("Snow") &&
+                temperature > 10.0 && temperature < 30.0 && windSpeed < 30.0;
     }
 }

@@ -27,7 +27,7 @@ public class DatabaseUtil {
     private static final String ADMIN_PASSWORD = "admin123";
 
     // Current date & time constant
-    private static final String CURRENT_DATETIME = "2025-07-29 18:54:14";
+    private static final String CURRENT_DATETIME = "2025-07-30 07:40:12";
 
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
@@ -301,16 +301,19 @@ public class DatabaseUtil {
         sb.append(name).append("|");
         sb.append(email).append("|");
         sb.append(phone).append("|");
-        sb.append("").append("|"); // languages
+        sb.append("English, Nepali").append("|"); // Default languages
         sb.append("0").append("|"); // yearsOfExperience
-        sb.append("").append("|"); // certifications
-        sb.append("").append("|"); // specializations
-        sb.append("true"); // available
+        sb.append("Basic Guide Training").append("|"); // Default certifications
+        sb.append("General Trekking").append("|"); // Default specializations
+        sb.append("true"); // available by default
 
         try {
             Files.write(Paths.get(GUIDES_FILE),
                     Collections.singletonList(sb.toString()),
+                    StandardOpenOption.CREATE,
                     StandardOpenOption.APPEND);
+
+            System.out.println("Guide profile created for user ID: " + userId);
         } catch (IOException e) {
             System.err.println("Error writing to guides file: " + e.getMessage());
             e.printStackTrace();
@@ -559,6 +562,58 @@ public class DatabaseUtil {
             return false;
         } catch (Exception e) {
             System.err.println("Unexpected error creating booking: " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    /**
+     * Update a booking's details
+     * @param booking The booking with updated information
+     * @return true if update successful, false otherwise
+     */
+    public boolean updateBooking(Booking booking) {
+        System.out.println("Updating booking with ID: " + booking.getId());
+
+        try {
+            List<String> lines = Files.readAllLines(Paths.get(BOOKINGS_FILE));
+            List<String> updatedLines = new ArrayList<>();
+            boolean found = false;
+
+            for (String line : lines) {
+                String[] parts = line.split("\\|");
+                if (parts.length >= 6 && parts[0].equals(booking.getId())) {
+                    // Format: id|trekId|touristId|guideId|bookingDate|status|price|duration|highRiskAcknowledged
+                    StringBuilder sb = new StringBuilder();
+                    sb.append(booking.getId()).append("|");
+                    sb.append(booking.getTrekId()).append("|");
+                    sb.append(booking.getTouristId()).append("|");
+                    sb.append(booking.getGuideId() != null ? booking.getGuideId() : "").append("|");
+                    sb.append(booking.getBookingDate()).append("|");
+                    sb.append(booking.getStatus()).append("|");
+                    sb.append(booking.getPrice()).append("|");
+                    sb.append(booking.getDuration()).append("|");
+                    sb.append(booking.isHighRiskAcknowledged());
+
+                    updatedLines.add(sb.toString());
+                    found = true;
+
+                    System.out.println("Booking found and updated: " + sb.toString());
+                } else {
+                    updatedLines.add(line);
+                }
+            }
+
+            if (found) {
+                Files.write(Paths.get(BOOKINGS_FILE), updatedLines);
+                System.out.println("Booking updated successfully");
+                return true;
+            } else {
+                System.err.println("Booking with ID " + booking.getId() + " not found");
+                return false;
+            }
+        } catch (IOException e) {
+            System.err.println("Error updating booking: " + e.getMessage());
             e.printStackTrace();
             return false;
         }
@@ -924,5 +979,242 @@ public class DatabaseUtil {
         }
 
         return false;
+    }
+
+    /**
+     * Get all users
+     * @return List of all users
+     */
+    public List<User> getAllUsers() {
+        List<User> userList = new ArrayList<>();
+
+        try {
+            if (!Files.exists(Paths.get(USERS_FILE))) {
+                return userList;
+            }
+
+            List<String> lines = Files.readAllLines(Paths.get(USERS_FILE));
+
+            for (String line : lines) {
+                String[] parts = line.split("\\|");
+                if (parts.length >= 10) {
+                    User user = new User();
+                    user.setId(parts[0]);
+                    user.setUsername(parts[1]);
+                    // Don't set password for security
+                    user.setFullName(parts[3]);
+                    user.setEmail(parts[4]);
+                    user.setContactNumber(parts[5]);
+                    user.setNationality(parts[6]);
+                    if (parts.length > 7) user.setPassportNumber(parts[7]);
+                    if (parts.length > 8) user.setEmergencyContact(parts[8]);
+                    user.setRole(UserRole.valueOf(parts[9]));
+
+                    userList.add(user);
+                }
+            }
+        } catch (IOException e) {
+            System.err.println("Error reading users file: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        return userList;
+    }
+
+    /**
+     * Delete a user by ID
+     * @param userId The user ID to delete
+     * @return true if successfully deleted, false otherwise
+     */
+    public boolean deleteUser(String userId) {
+        try {
+            // First find the user to get the username
+            String username = null;
+            User userToDelete = null;
+
+            for (User user : getAllUsers()) {
+                if (user.getId().equals(userId)) {
+                    username = user.getUsername();
+                    userToDelete = user;
+                    break;
+                }
+            }
+
+            if (username == null) {
+                System.err.println("User with ID " + userId + " not found");
+                return false;
+            }
+
+            // Don't delete the admin user
+            if ("admin".equals(username)) {
+                System.err.println("Cannot delete the admin user");
+                return false;
+            }
+
+            // If user is a guide, delete guide profile too
+            if (userToDelete.getRole() == UserRole.GUIDE) {
+                Guide guide = getGuideByUserId(userId);
+                if (guide != null) {
+                    deleteGuide(guide.getId());
+                }
+            }
+
+            // If user is a tourist, delete or reassign their bookings
+            if (userToDelete.getRole() == UserRole.TOURIST) {
+                List<Booking> userBookings = getBookingsForTourist(userId);
+                for (Booking booking : userBookings) {
+                    // For now, just cancel the bookings
+                    updateBookingStatus(booking.getId(), "Cancelled");
+                }
+            }
+
+            // Read all users and write back except the one to delete
+            List<String> lines = Files.readAllLines(Paths.get(USERS_FILE));
+            List<String> updatedLines = new ArrayList<>();
+
+            for (String line : lines) {
+                String[] parts = line.split("\\|");
+                if (parts.length >= 1 && !parts[0].equals(userId)) {
+                    updatedLines.add(line);
+                }
+            }
+
+            Files.write(Paths.get(USERS_FILE), updatedLines);
+            System.out.println("User deleted successfully: " + username + " (ID: " + userId + ")");
+            return true;
+
+        } catch (IOException e) {
+            System.err.println("Error deleting user: " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    /**
+     * Update a user's information
+     * @param user User object with updated information
+     * @return true if update successful, false otherwise
+     */
+    public boolean updateUser(User user) {
+        try {
+            List<String> lines = Files.readAllLines(Paths.get(USERS_FILE));
+            List<String> updatedLines = new ArrayList<>();
+            boolean found = false;
+
+            for (String line : lines) {
+                String[] parts = line.split("\\|");
+                if (parts.length >= 10 && parts[0].equals(user.getId())) {
+                    // Keep the password and registration date from original record
+                    String password = parts[2];
+                    String registrationDate = parts.length > 10 ? parts[10] : CURRENT_DATETIME;
+
+                    // Format: id|username|password|fullName|email|contactNumber|nationality|passportNumber|emergencyContact|role|registrationDate
+                    StringBuilder sb = new StringBuilder();
+                    sb.append(user.getId()).append("|");
+                    sb.append(user.getUsername()).append("|");
+                    sb.append(password).append("|");
+                    sb.append(user.getFullName()).append("|");
+                    sb.append(user.getEmail()).append("|");
+                    sb.append(user.getContactNumber()).append("|");
+                    sb.append(user.getNationality()).append("|");
+                    sb.append(user.getPassportNumber() != null ? user.getPassportNumber() : "").append("|");
+                    sb.append(user.getEmergencyContact() != null ? user.getEmergencyContact() : "").append("|");
+                    sb.append(user.getRole().toString()).append("|");
+                    sb.append(registrationDate);
+
+                    updatedLines.add(sb.toString());
+                    found = true;
+
+                    System.out.println("User updated: " + user.getUsername() + " (ID: " + user.getId() + ")");
+                } else {
+                    updatedLines.add(line);
+                }
+            }
+
+            if (found) {
+                Files.write(Paths.get(USERS_FILE), updatedLines);
+                return true;
+            } else {
+                System.err.println("User with ID " + user.getId() + " not found");
+                return false;
+            }
+
+        } catch (IOException e) {
+            System.err.println("Error updating user: " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    /**
+     * Get booking statistics
+     * @return Map containing booking statistics
+     */
+    public Map<String, Object> getBookingStatistics() {
+        Map<String, Object> stats = new HashMap<>();
+
+        List<Booking> allBookings = getAllBookings();
+
+        // Count by status
+        Map<String, Integer> statusCounts = new HashMap<>();
+
+        // Calculate total revenue
+        double totalRevenue = 0;
+
+        // Track trek popularity
+        Map<String, Integer> trekPopularity = new HashMap<>();
+
+        for (Booking booking : allBookings) {
+            // Count by status
+            String status = booking.getStatus();
+            statusCounts.put(status, statusCounts.getOrDefault(status, 0) + 1);
+
+            // Add to revenue if confirmed or completed
+            if ("Confirmed".equals(status) || "Completed".equals(status)) {
+                totalRevenue += booking.getPrice();
+            }
+
+            // Track trek popularity
+            String trekName = booking.getTrekName();
+            if (trekName != null) {
+                trekPopularity.put(trekName, trekPopularity.getOrDefault(trekName, 0) + 1);
+            }
+        }
+
+        // Find most popular trek
+        String mostPopularTrek = "";
+        int maxBookings = 0;
+
+        for (Map.Entry<String, Integer> entry : trekPopularity.entrySet()) {
+            if (entry.getValue() > maxBookings) {
+                maxBookings = entry.getValue();
+                mostPopularTrek = entry.getKey();
+            }
+        }
+
+        stats.put("totalBookings", allBookings.size());
+        stats.put("statusCounts", statusCounts);
+        stats.put("totalRevenue", totalRevenue);
+        stats.put("mostPopularTrek", mostPopularTrek);
+        stats.put("mostPopularTrekCount", maxBookings);
+
+        return stats;
+    }
+
+    /**
+     * Get current date/time
+     * @return Current date/time string
+     */
+    public String getCurrentDateTime() {
+        return CURRENT_DATETIME;
+    }
+
+    /**
+     * Check if the current user is BibekDkl
+     * @param username The username to check
+     * @return True if the user is BibekDkl
+     */
+    public boolean isBibekDkl(String username) {
+        return "BibekDkl".equals(username);
     }
 }

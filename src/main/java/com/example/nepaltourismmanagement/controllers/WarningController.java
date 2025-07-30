@@ -4,84 +4,130 @@ import com.example.nepaltourismmanagement.models.Booking;
 import com.example.nepaltourismmanagement.models.Trek;
 import com.example.nepaltourismmanagement.models.User;
 import com.example.nepaltourismmanagement.utils.DatabaseUtil;
-import com.example.nepaltourismmanagement.utils.DateTimeUtil;
-import javafx.event.ActionEvent;
+import com.example.nepaltourismmanagement.utils.LanguageManager;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
+import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
+import javafx.scene.image.ImageView;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
-import java.time.LocalDateTime;
+import java.net.URL;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ResourceBundle;
 
-public class WarningController {
+public class WarningController implements Initializable {
 
-    @FXML private Label timestampLabel;
-    @FXML private Label userLabel;
-    @FXML private Button chooseAnotherButton;
+    @FXML private Text warningTitle;
+    @FXML private Text warningDescription;
+    @FXML private Label trekNameLabel;
+    @FXML private Label difficultyLabel;
+    @FXML private Label altitudeLabel;
+    @FXML private ImageView warningImage;
+    @FXML private CheckBox acknowledgementCheckbox;
     @FXML private Button proceedButton;
+    @FXML private Button cancelButton;
+
+    // New fields for handling trip date and price
+    private LocalDate tripDate;
+    private double finalPrice;
+    private static final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     private Trek currentTrek;
     private User currentUser;
     private DatabaseUtil databaseUtil;
+    private LanguageManager languageManager;
 
-    public void initialize() {
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
         databaseUtil = new DatabaseUtil();
-        timestampLabel.setText(DateTimeUtil.formatDateTime(LocalDateTime.now()));
+        languageManager = LanguageManager.getInstance();
+
+        // Disable proceed button until checkbox is checked
+        proceedButton.setDisable(true);
+
+        // Add listener for checkbox
+        acknowledgementCheckbox.selectedProperty().addListener((obs, oldVal, newVal) -> {
+            proceedButton.setDisable(!newVal);
+        });
     }
 
     public void setTrekAndUser(Trek trek, User user) {
         this.currentTrek = trek;
         this.currentUser = user;
-        userLabel.setText(user.getUsername());
-        System.out.println("Warning controller initialized with trek: " + trek.getName() + " and user: " + user.getUsername());
+
+        // Update UI with trek details
+        trekNameLabel.setText(trek.getName());
+        difficultyLabel.setText(trek.getDifficulty());
+        altitudeLabel.setText(String.valueOf(trek.getMaxAltitude()) + " m");
+
+        // Update warning text
+        warningTitle.setText(languageManager.translate("Warning: High Difficulty Trek"));
+        warningDescription.setText(languageManager.translate(
+                "This trek is rated as") + " " + trek.getDifficulty() + ". " +
+                languageManager.translate("It requires excellent physical fitness, prior high-altitude experience, and proper acclimatization. " +
+                        "Weather conditions can change rapidly, and emergency evacuation may be difficult."));
+
+        // Update checkbox text
+        acknowledgementCheckbox.setText(languageManager.translate(
+                "I acknowledge the risks involved and confirm I am physically prepared for this trek."));
+    }
+
+    // Add the new method to set trip date and price
+    public void setTripDateAndPrice(LocalDate tripDate, double finalPrice) {
+        this.tripDate = tripDate;
+        this.finalPrice = finalPrice;
     }
 
     @FXML
-    private void handleChooseAnother(ActionEvent event) {
-        System.out.println("User chose to select another trek");
-        closeStage(event);
-    }
+    private void handleProceed() {
+        if (!acknowledgementCheckbox.isSelected()) {
+            return;
+        }
 
-    @FXML
-    private void handleProceed(ActionEvent event) {
-        System.out.println("User chose to proceed with booking despite warning");
         try {
-            // Create a new booking despite the warning
+            // Create a new booking
             Booking booking = new Booking();
             booking.setTrekId(currentTrek.getId());
             booking.setTouristId(currentUser.getId());
             booking.setStatus("Pending");
-            booking.setPrice(currentTrek.getBasePrice());
+            booking.setPrice(finalPrice);
             booking.setDuration(currentTrek.getDuration());
-            booking.setBookingDate(DateTimeUtil.formatDate(LocalDateTime.now()));
-            booking.setHighRiskAcknowledged(true); // Mark as acknowledged high risk
+            booking.setBookingDate(tripDate != null ? tripDate.format(dateFormatter) : "2025-07-30");
+            booking.setHighRiskAcknowledged(true);
 
             // Save to database
             boolean success = databaseUtil.createBooking(booking);
 
             if (success) {
-                showAlert(Alert.AlertType.INFORMATION, "Booking Successful",
-                        "Your booking for " + currentTrek.getName() + " has been submitted with risk acknowledgment and is awaiting confirmation.");
-                System.out.println("High-risk booking created successfully");
+                showAlert(Alert.AlertType.INFORMATION, languageManager.translate("Booking Successful"),
+                        languageManager.translate("Your booking for") + " " + currentTrek.getName() + " " +
+                                languageManager.translate("has been submitted and is awaiting confirmation."));
             } else {
-                showAlert(Alert.AlertType.ERROR, "Booking Error",
-                        "Could not create the booking. Please try again.");
-                System.out.println("Failed to create high-risk booking");
+                showAlert(Alert.AlertType.ERROR, languageManager.translate("Booking Error"),
+                        languageManager.translate("Failed to create booking. Please try again."));
             }
 
-            closeStage(event);
+            // Close the warning dialog
+            closeWindow();
         } catch (Exception e) {
-            showAlert(Alert.AlertType.ERROR, "Booking Error",
-                    "Could not complete booking: " + e.getMessage());
+            showAlert(Alert.AlertType.ERROR, languageManager.translate("Booking Error"),
+                    languageManager.translate("Could not complete booking") + ": " + e.getMessage());
             e.printStackTrace();
         }
     }
 
-    private void closeStage(ActionEvent event) {
-        Node source = (Node) event.getSource();
-        Stage stage = (Stage) source.getScene().getWindow();
+    @FXML
+    private void handleCancel() {
+        closeWindow();
+    }
+
+    private void closeWindow() {
+        Stage stage = (Stage) cancelButton.getScene().getWindow();
         stage.close();
     }
 

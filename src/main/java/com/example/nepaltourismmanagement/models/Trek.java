@@ -7,15 +7,17 @@ public class Trek {
     private int maxAltitude;
     private int duration;
     private String difficulty;
-    private double basePrice;
+    private double basePrice;  // Add this field
     private String description;
-    private boolean seasonal;
-    private String bestSeason;
+    private boolean seasonal;  // Add this field
+    private String bestSeason;  // Add this field
+    private double price;      // Existing field
 
+    // Constructor
     public Trek() {
     }
 
-    // Getters and Setters
+    // Getters and setters
     public String getId() {
         return id;
     }
@@ -70,6 +72,14 @@ public class Trek {
 
     public void setBasePrice(double basePrice) {
         this.basePrice = basePrice;
+    }
+
+    public double getPrice() {
+        return price;
+    }
+
+    public void setPrice(double price) {
+        this.price = price;
     }
 
     public String getDescription() {

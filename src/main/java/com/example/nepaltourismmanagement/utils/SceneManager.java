@@ -9,208 +9,160 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.stage.Stage;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 
 public class SceneManager {
 
-    // Path to FXML files - adjust these to match your actual file locations
-    private static final String LOGIN_PAGE = "/fxml/login.fxml";
-    private static final String REGISTER_PAGE = "/fxml/registePage.fxml";
-    private static final String ADMIN_DASHBOARD = "/fxml/adminDashboard.fxml";
-    private static final String GUIDE_DASHBOARD = "/fxml/guideDashboard.fxml";
-    private static final String TOURIST_DASHBOARD = "/fxml/touristDashboard.fxml";
+    private static final String CURRENT_DATE = "2025-07-30 06:21:09";
+    private static final String CURRENT_USER = "BibekDkl";
 
-    // Switch to login page
     public void switchToLoginPage(ActionEvent event) throws IOException {
-        switchScene(event, LOGIN_PAGE);
+        System.out.println("Switching to login page");
+        Parent root = loadFXML("login.fxml");
+        setScene(event, root);
     }
 
-    // Switch to login page using Hyperlink or any Node
-    public void switchToLoginPage(Node node) throws IOException {
-        switchScene(node, LOGIN_PAGE);
-    }
-
-    // Switch to register page
     public void switchToRegisterPage(ActionEvent event) throws IOException {
-        System.out.println("Switching to register page...");
-        switchScene(event, REGISTER_PAGE);
+        System.out.println("Switching to register page");
+        Parent root = loadFXML("registerPage.fxml");
+        setScene(event, root);
     }
 
-    // Switch to register page using Hyperlink or any Node
-    public void switchToRegisterPage(Node node) throws IOException {
-        switchScene(node, REGISTER_PAGE);
-    }
-
-    // Switch to admin dashboard
     public void switchToAdminDashboard(ActionEvent event, User user) throws IOException {
         System.out.println("Switching to admin dashboard for user: " + user.getUsername());
+        FXMLLoader loader = new FXMLLoader();
+        Parent root = loadFXML("adminDashboard.fxml", loader);
 
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource(ADMIN_DASHBOARD));
-            Parent root = loader.load();
-
-            // Pass user data to the admin controller
             AdminDashboardController controller = loader.getController();
-            if (controller == null) {
-                throw new RuntimeException("Could not get AdminDashboardController");
-            }
-
             controller.setCurrentUser(user);
-
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            Scene scene = new Scene(root);
-            stage.setScene(scene);
-            stage.setTitle("Admin Dashboard - Trip Sewa Nepal");
-            stage.show();
-
-            System.out.println("Admin dashboard loaded successfully");
         } catch (Exception e) {
-            System.err.println("Error switching to admin dashboard: " + e.getMessage());
+            System.err.println("Error setting user in admin controller: " + e.getMessage());
             e.printStackTrace();
-            throw new IOException("Failed to switch to admin dashboard: " + e.getMessage(), e);
+            // Continue anyway to show dashboard
         }
+
+        setScene(event, root);
     }
 
-    // Switch to guide dashboard
+    public void switchToTouristDashboard(ActionEvent event, User user) throws IOException {
+        System.out.println("Switching to tourist dashboard for user: " + user.getUsername());
+        FXMLLoader loader = new FXMLLoader();
+        Parent root = loadFXML("touristDashboard.fxml", loader);
+
+        try {
+            TouristDashboardController controller = loader.getController();
+            controller.setCurrentUser(user);
+        } catch (Exception e) {
+            System.err.println("Error setting user in tourist controller: " + e.getMessage());
+            e.printStackTrace();
+            // Continue anyway to show dashboard
+        }
+
+        setScene(event, root);
+    }
+
     public void switchToGuideDashboard(ActionEvent event, User user) throws IOException {
         System.out.println("Switching to guide dashboard for user: " + user.getUsername());
+        FXMLLoader loader = new FXMLLoader();
+        Parent root = loadFXML("guideDashboard.fxml", loader);
 
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource(GUIDE_DASHBOARD));
-            Parent root = loader.load();
-
-            // Pass user data to the guide controller
             GuideDashboardController controller = loader.getController();
-            if (controller == null) {
-                throw new RuntimeException("Could not get GuideDashboardController");
-            }
-
             controller.setCurrentUser(user);
-
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            Scene scene = new Scene(root);
-            stage.setScene(scene);
-            stage.setTitle("Guide Dashboard - Trip Sewa Nepal");
-            stage.show();
-
-            System.out.println("Guide dashboard loaded successfully");
         } catch (Exception e) {
-            System.err.println("Error switching to guide dashboard: " + e.getMessage());
+            System.err.println("Error setting user in guide controller: " + e.getMessage());
             e.printStackTrace();
-            throw new IOException("Failed to switch to guide dashboard: " + e.getMessage(), e);
+            // Continue anyway to show dashboard
+        }
+
+        setScene(event, root);
+    }
+
+    private Parent loadFXML(String fxmlFile) throws IOException {
+        return loadFXML(fxmlFile, null);
+    }
+
+    private Parent loadFXML(String fxmlFile, FXMLLoader providedLoader) throws IOException {
+        FXMLLoader loader = providedLoader != null ? providedLoader : new FXMLLoader();
+
+        // Try different paths to find the FXML
+        URL fxmlUrl = null;
+
+        // First try with /fxml/ prefix
+        fxmlUrl = getClass().getResource("/fxml/" + fxmlFile);
+
+        // Then try without prefix
+        if (fxmlUrl == null) {
+            fxmlUrl = getClass().getResource("/" + fxmlFile);
+        }
+
+        // Try just the filename
+        if (fxmlUrl == null) {
+            fxmlUrl = getClass().getResource(fxmlFile);
+        }
+
+        // If still not found, try file system paths
+        if (fxmlUrl == null) {
+            File file = new File("src/main/resources/fxml/" + fxmlFile);
+            if (file.exists()) {
+                fxmlUrl = file.toURI().toURL();
+            }
+        }
+
+        if (fxmlUrl == null) {
+            File file = new File("src/main/resources/" + fxmlFile);
+            if (file.exists()) {
+                fxmlUrl = file.toURI().toURL();
+            }
+        }
+
+        if (fxmlUrl == null) {
+            showErrorAlert("FXML Not Found", "Could not find FXML file: " + fxmlFile);
+            throw new IOException("Could not find FXML file: " + fxmlFile);
+        }
+
+        // Set the URL in the loader
+        System.out.println("Loading FXML from: " + fxmlUrl);
+        loader.setLocation(fxmlUrl);
+
+        // Try to load
+        try {
+            return loader.load();
+        } catch (IOException e) {
+            // Try as input stream as a last resortadmincontroller and databesncontroller?
+
+            try {
+                InputStream is = fxmlUrl.openStream();
+                loader = new FXMLLoader();
+                return loader.load(is);
+            } catch (Exception e2) {
+                System.err.println("Failed to load FXML from stream: " + e2.getMessage());
+                showErrorAlert("FXML Loading Error", "Error loading FXML file: " + e2.getMessage());
+                throw new IOException("Error loading FXML file: " + fxmlFile, e2);
+            }
         }
     }
 
-    // Switch to tourist dashboard
-    public void switchToTouristDashboard(ActionEvent event, User user) throws IOException {
-        System.out.println("Switching to tourist dashboard for user: " + user.getUsername() + " with ID: " + user.getId());
-
-        try {
-            // Try to load the FXML file
-            URL fxmlUrl = getClass().getResource(TOURIST_DASHBOARD);
-            if (fxmlUrl == null) {
-                // If not found, try alternative locations
-                System.out.println("Tourist dashboard FXML not found at: " + TOURIST_DASHBOARD);
-                fxmlUrl = getClass().getResource("/TouristDashboard.fxml");
-
-                if (fxmlUrl == null) {
-                    throw new IOException("Could not find FXML file for tourist dashboard");
-                }
-            }
-
-            System.out.println("Loading tourist dashboard from: " + fxmlUrl);
-            FXMLLoader loader = new FXMLLoader(fxmlUrl);
-            Parent root = loader.load();
-
-            // Get the controller and set the user
-            TouristDashboardController controller = loader.getController();
-            if (controller == null) {
-                throw new RuntimeException("Could not get TouristDashboardController");
-            }
-
-            // Set the current user - this is the crucial step that was failing
-            System.out.println("Setting user in TouristDashboardController: " + user.getUsername());
-            controller.setCurrentUser(user);
-
-            // Set up the stage
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            Scene scene = new Scene(root);
-            stage.setScene(scene);
-            stage.setTitle("Tourist Dashboard - Trip Sewa Nepal");
-            stage.show();
-
-            System.out.println("Tourist dashboard loaded successfully");
-        } catch (Exception e) {
-            System.err.println("Error switching to tourist dashboard: " + e.getMessage());
-            e.printStackTrace();
-            throw new IOException("Failed to switch to tourist dashboard: " + e.getMessage(), e);
-        }
+    private void setScene(ActionEvent event, Parent root) {
+        Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();
+        Scene scene = new Scene(root);
+        stage.setScene(scene);
+        stage.show();
     }
 
-    // Generic method to switch scene from ActionEvent
-    private void switchScene(ActionEvent event, String fxmlPath) throws IOException {
-        try {
-            System.out.println("Loading FXML: " + fxmlPath);
-            URL fxmlUrl = getClass().getResource(fxmlPath);
-
-            if (fxmlUrl == null) {
-                System.err.println("FXML file not found at: " + fxmlPath);
-
-                // Try alternative path formats
-                String altPath = fxmlPath.startsWith("/") ? fxmlPath.substring(1) : "/" + fxmlPath;
-                fxmlUrl = getClass().getResource(altPath);
-
-                if (fxmlUrl == null) {
-                    throw new IOException("FXML file not found: " + fxmlPath);
-                }
-
-                System.out.println("Found FXML at alternative path: " + altPath);
-            }
-
-            Parent root = FXMLLoader.load(fxmlUrl);
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            Scene scene = new Scene(root);
-            stage.setScene(scene);
-            stage.show();
-            System.out.println("Scene switched successfully");
-        } catch (Exception e) {
-            System.err.println("Error switching scene: " + e.getMessage());
-            e.printStackTrace();
-            throw new IOException("Failed to switch scene: " + e.getMessage(), e);
-        }
-    }
-
-    // Generic method to switch scene from Node
-    private void switchScene(Node node, String fxmlPath) throws IOException {
-        try {
-            URL fxmlUrl = getClass().getResource(fxmlPath);
-
-            if (fxmlUrl == null) {
-                System.err.println("FXML file not found at: " + fxmlPath);
-
-                // Try alternative path formats
-                String altPath = fxmlPath.startsWith("/") ? fxmlPath.substring(1) : "/" + fxmlPath;
-                fxmlUrl = getClass().getResource(altPath);
-
-                if (fxmlUrl == null) {
-                    throw new IOException("FXML file not found: " + fxmlPath);
-                }
-
-                System.out.println("Found FXML at alternative path: " + altPath);
-            }
-
-            Parent root = FXMLLoader.load(fxmlUrl);
-            Stage stage = (Stage) node.getScene().getWindow();
-            Scene scene = new Scene(root);
-            stage.setScene(scene);
-            stage.show();
-        } catch (Exception e) {
-            System.err.println("Error switching scene: " + e.getMessage());
-            e.printStackTrace();
-            throw new IOException("Failed to switch scene: " + e.getMessage(), e);
-        }
+    private void showErrorAlert(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 }
