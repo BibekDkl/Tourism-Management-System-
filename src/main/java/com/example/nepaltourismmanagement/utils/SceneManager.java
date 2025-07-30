@@ -18,7 +18,7 @@ public class SceneManager {
 
     // Path to FXML files - adjust these to match your actual file locations
     private static final String LOGIN_PAGE = "/fxml/login.fxml";
-    private static final String REGISTER_PAGE = "/fxml/registeView.fxml";
+    private static final String REGISTER_PAGE = "/fxml/registePage.fxml";
     private static final String ADMIN_DASHBOARD = "/fxml/adminDashboard.fxml";
     private static final String GUIDE_DASHBOARD = "/fxml/guideDashboard.fxml";
     private static final String TOURIST_DASHBOARD = "/fxml/touristDashboard.fxml";
